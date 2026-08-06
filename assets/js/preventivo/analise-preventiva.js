@@ -32,10 +32,44 @@ window.PreventivoAnalisePreventiva = (function () {
       });
   }
 
+  // Após criar a preventiva: alerta de confirmação (SweetAlert2) e, ao
+  // confirmar, atualiza heatmap + lista da Triagem.
+  function _onCreated(prevId, label) {
+    if (window.Swal) {
+      Swal.fire({
+        title: 'Preventiva criada!',
+        html: '<div style="font-size:14px">A preventiva de <strong>' + (label || '') + '</strong> foi criada com sucesso e já aparece na lista de <strong>Triagem</strong>.</div>',
+        icon: 'success',
+        confirmButtonText: 'Ok, atualizar',
+        confirmButtonColor: '#7c3aed',
+        focusConfirm: true,
+      }).then(function () {
+        _load();
+        if (window.PreventivoLista && typeof window.PreventivoLista.reload === 'function') {
+          window.PreventivoLista.reload().then(function () {
+            if (prevId && window.PreventivoGoToLista) window.PreventivoGoToLista('andamento');
+          });
+        } else if (prevId && window.PreventivoGoToLista) {
+          window.PreventivoGoToLista('andamento');
+        }
+      });
+    } else {
+      _load();
+      if (window.PreventivoLista && typeof window.PreventivoLista.reload === 'function') {
+        window.PreventivoLista.reload();
+      }
+    }
+  }
+
   function init() {
     AnaliseFilterBar.init({ onChange: _load });
     AnaliseHeatmap.init({ containerId: 'heatmap-wrap', showAcao: true, groupGpon: true, listMode: true });
-    PreventivaModal.init({ basePath: BASE_PATH, onCreated: _load });
+    PreventivaModal.init({
+      basePath: BASE_PATH,
+      onCreated: function (res) {
+        _onCreated(res && res.preventiva_id, res && res.label);
+      },
+    });
   }
 
   // Chamado por activatePanel() em preventivo.php na primeira vez que o

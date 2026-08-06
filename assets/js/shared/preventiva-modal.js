@@ -131,12 +131,17 @@ window.PreventivaModal = (function () {
             return;
           }
           var prevId = res.data && res.data.preventiva_id;
-          if (alertEl) {
-            alertEl.className = 'alert alert-success';
-            alertEl.innerHTML = (res.message || 'Preventiva criada com sucesso.') +
-              (prevId ? ' <a href="' + basePath + '/preventivo/' + prevId + '" class="alert-link"><i class="bi bi-arrow-right-circle"></i> Abrir preventiva e continuar</a>' : '');
+          var modalEl = document.getElementById('modal-preventiva');
+          if (modalEl && window.bootstrap) {
+            var inst = bootstrap.Modal.getInstance(modalEl);
+            if (inst) inst.hide(); else new bootstrap.Modal(modalEl).hide();
           }
-          onCreated();
+          onCreated({
+            preventiva_id: prevId,
+            gpon: gpon,
+            sp: sp,
+            label: gpon + ' / ' + sp,
+          });
         })
         .catch(function () {
           if (alertEl) {

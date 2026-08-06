@@ -22,8 +22,9 @@ function chip(text, cls) {
     return '<span class="hp-chip ' + cls + '">' + esc(text) + '</span>';
   }
 
-  var dt = null;
+var dt = null;
   var allRows = [];
+  var currentFilter = null;
 
   function matches(row, filterKey) {
     if (!filterKey) return true; // '' = todas (Histórico)
@@ -56,9 +57,25 @@ function chip(text, cls) {
 
   function applyFilter(filterKey) {
     if (!dt) return;
+    currentFilter = filterKey;
     var rows = allRows.filter(function (r) { return matches(r, filterKey); });
     dt.clear().rows.add(rows).draw();
   }
 
-  return { init: init, applyFilter: applyFilter, getRows: function () { return allRows; } };
+  // Recarrega os dados do backend (fica ampla também o dashboard) e reaplica o filtro atual
+  function reload() {
+    return fetch(BASE_PATH + '/api/preventiva', { credentials: 'same-origin' })
+      .then(function (r) { return r.json(); })
+      .then(function (res) {
+        allRows = res.ok ? (res.data || []) : allRows;
+        if (window.PreventivoDashboard && typeof window.PreventivoDashboard.render === 'function') {
+          window.PreventivoDashboard.render(allRows);
+        }
+        if (dt && currentFilter !== null) applyFilter(currentFilter);
+        return allRows;
+      })
+      .catch(function () { return allRows; });
+  }
+
+  return { init: init, applyFilter: applyFilter, getRows: function () { return allRows; }, reload: reload };
 })();

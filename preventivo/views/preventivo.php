@@ -102,6 +102,7 @@ $base = GPON_BASE_PATH;
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="<?= $base ?>/assets/js/shared/analise-filter-bar.js?v=<?= filemtime(__DIR__ . '/../../assets/js/shared/analise-filter-bar.js') ?>"></script>
 <script src="<?= $base ?>/assets/js/shared/analise-heatmap.js?v=<?= filemtime(__DIR__ . '/../../assets/js/shared/analise-heatmap.js') ?>"></script>
 <script src="<?= $base ?>/assets/js/shared/preventiva-modal.js?v=<?= filemtime(__DIR__ . '/../../assets/js/shared/preventiva-modal.js') ?>"></script>
