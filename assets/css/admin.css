@@ -1,0 +1,134 @@
+/* ── Admin Panel — estilos específicos ────────────────────── */
+
+/* ── Badges de nível de acesso (Gerenciar Usuários) ────────── */
+.badge-nivel-admin      { background: #fef3c7; color: #b45309; }
+.badge-nivel-backoffice { background: #f3e8ff; color: #7e22ce; }
+.badge-nivel-operador   { background: #dbeafe; color: #1d4ed8; }
+.badge-nivel-supervisor { background: #dcfce7; color: #15803d; }
+.badge-nivel-tecnico    { background: #ffedd5; color: #c2410c; }
+
+/* ── Admin Sidebar — navegação ──────────────────────────────── */
+.admin-sidebar {
+  padding: 16px 10px;
+}
+
+.admin-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.admin-nav-section-title {
+  display: block;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: #6d28d9;
+  padding: 0 8px 8px;
+  border-bottom: 1px solid rgba(139,92,246,.18);
+  margin-bottom: 4px;
+}
+
+.admin-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 10px;
+  border-radius: 8px;
+  border-left: 3px solid transparent;
+  color: var(--gpon-text);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-bottom: 2px;
+  transition: background .15s, color .15s, border-left-color .15s;
+  user-select: none;
+}
+
+.admin-nav-item i {
+  font-size: 15px;
+  color: #7c3aed;
+  width: 18px;
+  text-align: center;
+  flex-shrink: 0;
+  transition: color .15s;
+}
+
+.admin-nav-item:hover:not(.disabled) {
+  background: rgba(139,92,246,.09);
+  color: var(--gpon-primary);
+  border-left-color: rgba(124,58,237,.3);
+  text-decoration: none;
+}
+
+.admin-nav-item.active {
+  background: rgba(139,92,246,.13);
+  color: var(--gpon-primary);
+  border-left-color: var(--gpon-primary);
+  font-weight: 600;
+}
+
+.admin-nav-item.active i {
+  color: var(--gpon-primary);
+}
+
+.admin-nav-item.disabled {
+  opacity: 0.4;
+  cursor: default;
+  pointer-events: none;
+}
+
+/* Seção "Em Breve" */
+.admin-nav-soon .admin-nav-section-title {
+  color: #9ca3af;
+  border-bottom-color: rgba(156,163,175,.2);
+}
+
+.admin-nav-soon .admin-nav-item i {
+  color: #9ca3af;
+}
+
+/* ── Área de conteúdo principal ─────────────────────────────── */
+.admin-main {
+  flex: 1;
+  min-width: 0;
+  padding: 24px;
+  overflow-y: auto;
+}
+
+/* ── Cabeçalho do painel ────────────────────────────────────── */
+.admin-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.admin-panel-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--gpon-text);
+  margin: 0;
+}
+
+.admin-panel-title i {
+  color: var(--gpon-primary);
+  font-size: 19px;
+}
+
+/* ── Responsividade ─────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .admin-main {
+    padding: 16px;
+  }
+
+  .admin-panel-title {
+    font-size: 15px;
+  }
+}

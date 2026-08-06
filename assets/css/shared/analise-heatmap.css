@@ -1,0 +1,137 @@
+/* ── CSS compartilhado: barra de filtros + Heatmap da Análise ──────────
+   Extraído de assets/css/analise.css para reuso em /analise e /preventivo
+   sem duplicar regra nem depender do arquivo inteiro (que define .kpi-card
+   e outras classes que colidem com estilos já usados em /preventivo). */
+
+/* ── Barra de filtros ───────────────────────────────────── */
+.analise-filter-bar {
+  display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+  background:#fff; border:1px solid var(--gpon-border); border-radius:8px;
+  padding:8px 14px; margin-bottom:16px; box-shadow:0 1px 2px rgba(76,29,149,.06);
+}
+.analise-filter-label {
+  font-size:11px; font-weight:700; color:var(--gpon-muted);
+  text-transform:uppercase; letter-spacing:.07em; display:flex; align-items:center; gap:5px;
+}
+.analise-sel {
+  border:1px solid var(--gpon-border); border-radius:6px; padding:4px 10px;
+  font-size:12px; font-family:inherit; color:var(--gpon-text);
+  background:#fff; cursor:pointer; outline:none;
+}
+.analise-sel:focus { border-color:var(--gpon-primary); }
+.analise-date {
+  border:1px solid var(--gpon-border); border-radius:6px; padding:4px 8px;
+  font-size:12px; font-family:inherit; color:var(--gpon-text);
+  background:#fff; outline:none;
+}
+.analise-date:focus { border-color:var(--gpon-primary); }
+.analise-btn-apply {
+  background:var(--gpon-primary); color:#fff; border:none; border-radius:6px;
+  padding:4px 12px; font-size:12px; font-weight:600; cursor:pointer;
+}
+.analise-btn-apply:hover { background:#6d28d9; }
+.analise-periodo-badge {
+  display:inline-flex; align-items:center; gap:4px;
+  background:#ede9fe; color:#6d28d9; border:1px solid #c4b5fd;
+  border-radius:20px; padding:2px 10px; font-size:10px; font-weight:700;
+}
+
+/* ── Filtro UF/Região ───────────────────────────────────── */
+.uf-btn-group { display:flex; align-items:center; gap:2px; }
+.uf-btn {
+  border:1px solid var(--gpon-border); border-radius:6px;
+  padding:3px 10px; font-size:11px; font-weight:700; cursor:pointer;
+  background:#fff; color:var(--gpon-muted); line-height:1.6;
+  transition:background .15s, color .15s, border-color .15s;
+}
+.uf-btn:hover { background:#f5f3ff; color:var(--gpon-primary); border-color:#c4b5fd; }
+.uf-btn.active { background:var(--gpon-primary); color:#fff; border-color:var(--gpon-primary); }
+.uf-btn.active-mt { background:#0369a1; color:#fff; border-color:#0369a1; }
+.uf-btn.active-ms { background:#15803d; color:#fff; border-color:#15803d; }
+.uf-btn.active-df { background:#7c3aed; color:#fff; border-color:#7c3aed; }
+.uf-btn.active-go { background:#b45309; color:#fff; border-color:#b45309; }
+
+/* ── Filtros extras (GPON / Splitter / Baixa Causa) ─────── */
+.analise-filter-sep { color:#d1d5db; font-size:16px; }
+.analise-inp {
+  border:1px solid var(--gpon-border); border-radius:8px; padding:4px 10px;
+  font-size:12px; font-family:inherit; color:var(--gpon-text);
+  background:#fff; outline:none; width:130px;
+  transition:border-color .15s, box-shadow .15s;
+}
+.analise-inp:hover  { border-color:#a78bfa; }
+.analise-inp:focus  { border-color:var(--gpon-primary); box-shadow:0 0 0 2px #ede9fe; }
+.analise-inp::placeholder { color:var(--gpon-muted); }
+.filter-pill {
+  display:inline-flex; align-items:center; gap:5px;
+  background:#fff; border:1px solid #e2e8f0; border-radius:8px;
+  padding:0 6px 0 8px; height:28px;
+  box-shadow:0 1px 3px rgba(0,0,0,.05);
+  transition:border-color .15s, box-shadow .15s;
+}
+.filter-pill:hover { border-color:#a78bfa; box-shadow:0 1px 4px rgba(124,58,237,.12); }
+.filter-pill:focus-within {
+  border-color:var(--gpon-primary); box-shadow:0 0 0 2px #ede9fe;
+}
+.filter-pill > i.bi { font-size:11px; color:#94a3b8; flex-shrink:0; }
+.filter-pill .analise-inp {
+  border:none; outline:none; box-shadow:none !important;
+  background:transparent; padding:0; width:110px; height:auto;
+}
+.filter-pill .analise-inp:hover,
+.filter-pill .analise-inp:focus { border:none; box-shadow:none !important; }
+.filter-clear {
+  background:none; border:none; cursor:pointer; flex-shrink:0;
+  color:#94a3b8; font-size:10px; padding:0 1px;
+  display:none; align-items:center; line-height:1;
+}
+.filter-clear:hover { color:var(--gpon-primary); }
+
+/* ── Card genérico (usado pelo Heatmap) ─────────────────── */
+.analise-card {
+  background:#fff; border:1px solid var(--gpon-border);
+  border-radius:var(--radius-md); padding:16px;
+  box-shadow:var(--shadow-sm); margin-bottom:16px;
+}
+.analise-card-header {
+  display:flex; align-items:center; gap:8px;
+  font-size:13px; font-weight:700; color:var(--gpon-text);
+  margin-bottom:14px; padding-bottom:10px;
+  border-bottom:1px solid var(--gpon-border);
+}
+.analise-card-sub { font-size:10px; font-weight:400; color:var(--gpon-muted); margin-left:auto; }
+
+/* ── Heatmap ─────────────────────────────────────────────── */
+.heatmap-scroll { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+.heatmap-tbl { border-collapse:collapse; font-size:11px; white-space:nowrap; }
+.heatmap-tbl th, .heatmap-tbl td { padding:5px 10px; border:1px solid #e5e7eb; text-align:center; }
+.heatmap-tbl thead th { background:#f8f7ff; color:var(--gpon-muted); font-size:10px; font-weight:700; letter-spacing:.04em; }
+.heatmap-gpon-label {
+  font-family:'IBM Plex Mono',monospace; font-size:10px; font-weight:700;
+  text-align:left!important; color:var(--gpon-text); background:#f8f7ff!important;
+  white-space:nowrap; position:sticky; left:0; z-index:1;
+}
+.hm-alta  { background:#fee2e2; color:#991b1b; font-weight:800; }
+.hm-media { background:#fef9c3; color:#92400e; font-weight:800; }
+.hm-baixa { background:#dcfce7; color:#166534; font-weight:700; }
+.hm-zero  { background:#f9fafb; color:#d1d5db; font-size:10px; }
+.hm-clickable { cursor:pointer; transition:transform .15s ease, filter .15s ease; }
+.hm-clickable:hover { transform:scale(1.12); filter:brightness(1.1); z-index:2; position:relative; }
+.hm-total { background:#ede9fe; color:#5b21b6; font-weight:800; font-family:'IBM Plex Mono',monospace; border-left:2px solid #c4b5fd!important; }
+.hm-total-clickable { cursor:pointer; transition:filter .15s ease, background .15s ease; }
+.hm-total-clickable:hover { filter:brightness(1.08); background:#ddd6fe!important; }
+.hm-date-th {
+  writing-mode: vertical-rl; transform: rotate(180deg);
+  padding: 10px 5px !important; white-space: nowrap;
+  width: 26px; min-width: 0; text-align: center;
+}
+/* Coluna "Ação" — só usada quando showAcao=true (contexto Preventivo) */
+.hm-acao-th { writing-mode:initial; transform:none; width:auto; }
+.hm-acao-td { white-space:normal; }
+.heatmap-legend { display:flex; gap:14px; margin-top:10px; flex-wrap:wrap; }
+.hm-leg { display:flex; align-items:center; gap:5px; font-size:10px; color:var(--gpon-muted); }
+.hm-leg-dot { width:12px; height:12px; border-radius:3px; flex-shrink:0; }
+
+/* ── Estado vazio/loading ────────────────────────────────── */
+.analise-empty { text-align:center; padding:28px 16px; color:var(--gpon-muted); font-size:12px; }
+.analise-empty i { font-size:28px; display:block; margin-bottom:6px; opacity:.35; }

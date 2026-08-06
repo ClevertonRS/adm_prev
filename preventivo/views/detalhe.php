@@ -1,0 +1,205 @@
+<?php
+/**
+ * Detalhe / execução de uma Preventiva de Rede.
+ * Requerido diretamente por index.php na rota /preventivo/{id}.
+ * Variáveis disponíveis no escopo: $pdo, $user, $path (definidas em index.php).
+ */
+$base = GPON_BASE_PATH;
+preg_match('#^/preventivo/(\d+)$#', $path, $mm);
+$previewId = (int)($mm[1] ?? 0);
+if ($previewId <= 0) {
+    http_response_code(404);
+    echo 'Preventiva inválida.';
+    exit;
+}
+
+$CHECKLIST_ITEMS = [
+    'inspecao_visual'         => 'Inspeção visual realizada',
+    'organizacao_caixa'       => 'Organização de caixa/bandejamento',
+    'limpeza_recomposicao'    => 'Limpeza/recomposição',
+    'correcao_conectorizacao' => 'Correção de conectorização',
+    'substituicao_splitter'   => 'Substituição de splitter',
+    'substituicao_cordao'     => 'Substituição de cordão / cabo drop / patch cord',
+    'adequacao_acomodacao'    => 'Adequação de acomodação / identificação',
+    'correcao_vedacao'        => 'Correção de vedação / proteção',
+    'foto_antes'              => 'Foto antes',
+    'foto_depois'             => 'Foto depois',
+    'teste_final'             => 'Teste final executado',
+];
+?>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Preventiva #<?= $previewId ?> — Radar GPON</title>
+  <link rel="icon" type="image/svg+xml" href="<?= $base ?>/assets/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="<?= $base ?>/assets/css/gpon.css?v=<?= filemtime(__DIR__ . '/../../assets/css/gpon.css') ?>">
+  <script>
+    const BASE_PATH = '<?= $base ?>';
+    window.GPON_PREVENTIVA_ID    = <?= $previewId ?>;
+    window.GPON_USER_ID          = <?= (int)($user['id'] ?? 0) ?>;
+    window.GPON_USER_NIVEL       = <?= json_encode($user['nivel'] ?? 'operador') ?>;
+    window.GPON_CHECKLIST_ITEMS  = <?= json_encode($CHECKLIST_ITEMS, JSON_UNESCAPED_UNICODE) ?>;
+  </script>
+  <style>
+    .prev-card { background:var(--gpon-surface); border:1px solid var(--gpon-border); border-radius:10px; padding:18px 20px; margin-bottom:16px; }
+    .prev-card h6 { font-weight:700; color:var(--gpon-text); margin-bottom:14px; display:flex; align-items:center; gap:8px; }
+    .prev-card h6 i { color:var(--gpon-primary); }
+    .prev-info-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:14px; }
+    .prev-info-item .lbl { font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--gpon-muted); margin-bottom:2px; }
+    .prev-info-item .val { font-size:14px; color:var(--gpon-text); font-weight:600; }
+    .prev-checklist-item { display:flex; align-items:center; gap:8px; padding:6px 0; border-bottom:1px solid #f1f5f9; font-size:13px; }
+    .prev-photo-thumb { position:relative; width:110px; height:110px; border-radius:8px; overflow:hidden; border:1px solid var(--gpon-border); }
+    .prev-photo-thumb img { width:100%; height:100%; object-fit:cover; cursor:pointer; }
+    .prev-photo-thumb .tipo-tag { position:absolute; bottom:0; left:0; right:0; background:rgba(0,0,0,.6); color:#fff; font-size:9px; text-align:center; padding:2px 0; text-transform:uppercase; }
+    .prev-photo-thumb .del-btn { position:absolute; top:3px; right:3px; background:rgba(220,38,38,.85); color:#fff; border:none; border-radius:4px; width:20px; height:20px; font-size:11px; line-height:1; }
+    .prev-hist-item { display:flex; gap:10px; padding:8px 0; border-bottom:1px solid #f1f5f9; font-size:12px; }
+    .prev-hist-item:last-child { border-bottom:none; }
+  </style>
+</head>
+<body>
+<div id="flash-bar" class="flash-bar"></div>
+
+<header class="gpon-topbar">
+  <div class="topbar-left">
+    <div class="topbar-logo-icon" onclick="location.href='<?= $base ?>/analise'" title="Radar GPON" style="cursor:pointer">📡</div>
+    <div class="topbar-brand">
+      <span class="brand-title">Radar GPON</span>
+      <span class="brand-sub">Preventiva #<?= $previewId ?></span>
+    </div>
+  </div>
+  <div class="topbar-actions">
+    <a href="<?= $base ?>/preventivo" class="tbtn" title="Voltar para a lista">
+      <i class="bi bi-arrow-left"></i><span>Preventivas</span>
+    </a>
+    <div class="user-badge">
+      <i class="bi bi-person-circle"></i>
+      <span><?= htmlspecialchars($user['nome'], ENT_QUOTES, 'UTF-8') ?></span>
+      <a href="<?= $base ?>/logout" class="logout-btn" title="Sair"><i class="bi bi-box-arrow-right"></i></a>
+    </div>
+  </div>
+</header>
+
+<div style="margin-top:var(--gpon-header-h); padding:20px; max-width:1000px; margin-left:auto; margin-right:auto">
+
+  <div id="loading-state" class="text-center text-muted py-5"><i class="bi bi-hourglass-split"></i> Carregando…</div>
+
+  <div id="prev-content" style="display:none">
+
+    <!-- Cabeçalho -->
+    <div class="prev-card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px">
+        <div>
+          <div style="font-size:20px;font-weight:700;color:var(--gpon-text)">
+            <span id="hdr-gpon" class="mono"></span> <i class="bi bi-arrow-right" style="font-size:14px;color:var(--gpon-muted)"></i> <span id="hdr-splitter" class="mono"></span>
+          </div>
+          <div id="hdr-badges" style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap"></div>
+        </div>
+        <div id="hdr-actions" style="display:flex;gap:8px;flex-wrap:wrap"></div>
+      </div>
+      <div class="prev-info-grid" style="margin-top:18px">
+        <div class="prev-info-item"><div class="lbl">Localidade</div><div class="val" id="info-localidade">—</div></div>
+        <div class="prev-info-item"><div class="lbl">Ocorrências no período</div><div class="val" id="info-ocorrencias">—</div></div>
+        <div class="prev-info-item"><div class="lbl">Supervisor</div><div class="val" id="info-supervisor">—</div></div>
+        <div class="prev-info-item"><div class="lbl">Técnico</div><div class="val" id="info-tecnico">—</div></div>
+        <div class="prev-info-item"><div class="lbl">Criado por</div><div class="val" id="info-criador">—</div></div>
+        <div class="prev-info-item"><div class="lbl">Criado em</div><div class="val" id="info-criado-em">—</div></div>
+        <div class="prev-info-item"><div class="lbl">Concluído em</div><div class="val" id="info-concluido-em">—</div></div>
+      </div>
+      <div style="margin-top:14px">
+        <div class="lbl" style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--gpon-muted)">Observação inicial</div>
+        <div id="info-observacao" style="font-size:13px;margin-top:2px">—</div>
+      </div>
+    </div>
+
+    <!-- Triagem (supervisor/admin/backoffice) -->
+    <div class="prev-card" id="card-triagem" style="display:none">
+      <h6><i class="bi bi-sliders"></i> Triagem</h6>
+      <div class="row g-3">
+        <div class="col-md-3">
+          <label class="form-label">Prioridade</label>
+          <select class="form-select form-select-sm" id="triagem-prioridade">
+            <option value="baixa">Baixa</option>
+            <option value="media">Média</option>
+            <option value="alta">Alta</option>
+            <option value="urgente">Urgente</option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Supervisor</label>
+          <select class="form-select form-select-sm" id="triagem-supervisor"></select>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Técnico</label>
+          <select class="form-select form-select-sm" id="triagem-tecnico"></select>
+        </div>
+        <div class="col-12 d-flex justify-content-end">
+          <button type="button" class="btn btn-sm btn-primary" id="btn-salvar-triagem"><i class="bi bi-save"></i> Salvar alterações</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Execução (técnico) -->
+    <div class="prev-card" id="card-execucao" style="display:none">
+      <h6><i class="bi bi-tools"></i> Execução</h6>
+      <div id="execucao-checklist"></div>
+      <div class="row g-3" style="margin-top:4px">
+        <div class="col-md-6"><label class="form-label">Causa raiz encontrada</label><textarea class="form-control form-control-sm" id="exec-causa-raiz" rows="2"></textarea></div>
+        <div class="col-md-6"><label class="form-label">Ação corretiva/preventiva aplicada</label><textarea class="form-control form-control-sm" id="exec-acoes" rows="2"></textarea></div>
+        <div class="col-md-6"><label class="form-label">Itens substituídos</label><textarea class="form-control form-control-sm" id="exec-itens" rows="2"></textarea></div>
+        <div class="col-md-6"><label class="form-label">Consumo de material</label><textarea class="form-control form-control-sm" id="exec-material" rows="2"></textarea></div>
+        <div class="col-12"><label class="form-label">Observação do técnico</label><textarea class="form-control form-control-sm" id="exec-observacao" rows="2"></textarea></div>
+        <div class="col-12 d-flex justify-content-end gap-2">
+          <button type="button" class="btn btn-sm btn-outline-secondary" id="btn-salvar-execucao"><i class="bi bi-save"></i> Salvar rascunho</button>
+          <button type="button" class="btn btn-sm btn-primary" id="btn-enviar-revisao"><i class="bi bi-send"></i> Enviar para revisão</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Fotos -->
+    <div class="prev-card" id="card-fotos">
+      <h6><i class="bi bi-camera"></i> Fotos e Evidências</h6>
+      <div id="upload-form-wrap" style="display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap">
+        <select class="form-select form-select-sm" id="foto-tipo" style="max-width:140px">
+          <option value="antes">Antes</option>
+          <option value="depois">Depois</option>
+          <option value="evidencia" selected>Evidência</option>
+        </select>
+        <input type="file" class="form-control form-control-sm" id="foto-input" accept="image/png,image/jpeg,image/webp" style="max-width:280px">
+        <button type="button" class="btn btn-sm btn-outline-primary" id="btn-upload-foto"><i class="bi bi-upload"></i> Enviar foto</button>
+      </div>
+      <div id="fotos-grid" style="display:flex;gap:10px;flex-wrap:wrap">
+        <span class="text-muted" style="font-size:12px" id="fotos-empty">Nenhuma foto enviada ainda.</span>
+      </div>
+    </div>
+
+    <!-- Validação (supervisor/admin/backoffice) -->
+    <div class="prev-card" id="card-validacao" style="display:none">
+      <h6><i class="bi bi-clipboard-check"></i> Validação</h6>
+      <p style="font-size:13px;color:var(--gpon-muted)">Revise o checklist, materiais e fotos antes de aprovar ou devolver.</p>
+      <div class="d-flex gap-2 justify-content-end">
+        <button type="button" class="btn btn-sm btn-outline-danger" id="btn-devolver"><i class="bi bi-arrow-counterclockwise"></i> Devolver com pendência</button>
+        <button type="button" class="btn btn-sm btn-success" id="btn-aprovar"><i class="bi bi-check-circle"></i> Aprovar e concluir</button>
+      </div>
+    </div>
+
+    <!-- Histórico -->
+    <div class="prev-card">
+      <h6><i class="bi bi-clock-history"></i> Histórico</h6>
+      <div id="historico-list"><span class="text-muted" style="font-size:12px">Sem eventos.</span></div>
+    </div>
+
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="<?= $base ?>/assets/js/preventivo/common.js?v=<?= filemtime(__DIR__ . '/../../assets/js/preventivo/common.js') ?>"></script>
+<script src="<?= $base ?>/assets/js/preventivo-detalhe.js?v=<?= filemtime(__DIR__ . '/../../assets/js/preventivo-detalhe.js') ?>"></script>
+</body>
+</html>

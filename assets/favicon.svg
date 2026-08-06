@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Fundo arredondado roxo (tema GPON) -->
+  <rect width="32" height="32" rx="7" fill="#7c3aed"/>
+  <!-- Ondas de sinal -->
+  <path d="M7 17 Q16 6 25 17" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="2.2" stroke-linecap="round"/>
+  <path d="M10 20 Q16 12 22 20" fill="none" stroke="rgba(255,255,255,.65)" stroke-width="2.2" stroke-linecap="round"/>
+  <path d="M13 23 Q16 18 19 23" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>
+  <!-- Ponto central (antena) -->
+  <circle cx="16" cy="25" r="2" fill="#fff"/>
+</svg>

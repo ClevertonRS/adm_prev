@@ -1,0 +1,41 @@
+/* ── Preventivo — página única (menu lateral, padrão Admin) ─────────────────
+   Reaproveita .admin-sidebar/.admin-nav-item/.admin-main/.admin-card/.kpi-grid
+   já existentes em gpon.css/admin.css. Aqui só o que é específico do módulo. */
+
+/* Tag "Em breve" nos itens de menu ainda sem função (Responsáveis/Relatórios) */
+.admin-nav-item .soon-tag {
+  margin-left: auto;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: #9ca3af;
+  background: rgba(156,163,175,.15);
+  padding: 1px 6px;
+  border-radius: 8px;
+}
+
+/* Barra de acento colorida no topo de cada KPI, por status */
+.kpi-card[data-status="aberta"]        { border-top: 3px solid #1d4ed8; }
+.kpi-card[data-status="triagem"]       { border-top: 3px solid #92400e; }
+.kpi-card[data-status="em_execucao"]   { border-top: 3px solid #854d0e; }
+.kpi-card[data-status="em_revisao"]    { border-top: 3px solid #5b21b6; }
+.kpi-card[data-status="concluida"]     { border-top: 3px solid #15803d; }
+.kpi-card[data-status="cancelada"]     { border-top: 3px solid #64748b; }
+.kpi-card[data-status="total"]         { border-top: 3px solid var(--gpon-primary); }
+
+/* Lista "Criadas recentemente" (Visão Geral) */
+.prev-recent-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 9px 0;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 12px;
+  text-decoration: none;
+  color: inherit;
+}
+.prev-recent-item:last-child { border-bottom: none; }
+.prev-recent-item:hover { color: var(--gpon-primary); }
+.prev-recent-meta { display: flex; align-items: center; gap: 8px; white-space: nowrap; }
