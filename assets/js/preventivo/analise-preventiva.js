@@ -34,7 +34,7 @@ window.PreventivoAnalisePreventiva = (function () {
 
   function init() {
     AnaliseFilterBar.init({ onChange: _load });
-    AnaliseHeatmap.init({ containerId: 'heatmap-wrap', showAcao: true });
+    AnaliseHeatmap.init({ containerId: 'heatmap-wrap', showAcao: true, groupGpon: true, listMode: true });
     PreventivaModal.init({ basePath: BASE_PATH, onCreated: _load });
   }
 
