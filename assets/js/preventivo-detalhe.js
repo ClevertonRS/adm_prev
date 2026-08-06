@@ -62,9 +62,7 @@
 
   function render() {
     var p = current.preventiva;
-    var exec = current.execucao || {};
     var canManage = CAN_MANAGE;
-    var isTecnicoResponsavel = USER_NIVEL === 'tecnico' && Number(p.tecnico_id) === Number(USER_ID);
 
     document.getElementById('hdr-gpon').textContent      = p.gpon;
     document.getElementById('hdr-splitter').textContent  = p.splitter;
@@ -118,33 +116,6 @@
       cardTriagem.style.display = 'none';
     }
 
-    // ── Execução ─────────────────────────────────────────────
-    var cardExecucao = document.getElementById('card-execucao');
-    var checklistWrap = document.getElementById('execucao-checklist');
-    var podeExecutar = (canManage || isTecnicoResponsavel) && ['concluida', 'cancelada'].indexOf(p.status) === -1;
-    if (podeExecutar) {
-      cardExecucao.style.display = '';
-      var checklistData = {};
-      try { checklistData = exec.checklist_json ? JSON.parse(exec.checklist_json) : {}; } catch (e) { checklistData = {}; }
-      checklistWrap.innerHTML = '';
-      Object.keys(CHECKLIST).forEach(function (key) {
-        var checked = !!checklistData[key];
-        checklistWrap.insertAdjacentHTML('beforeend',
-          '<label class="prev-checklist-item"><input type="checkbox" data-checklist-key="' + key + '"' + (checked ? ' checked' : '') + '> ' + esc(CHECKLIST[key]) + '</label>'
-        );
-      });
-      document.getElementById('exec-causa-raiz').value  = exec.causa_raiz || '';
-      document.getElementById('exec-acoes').value       = exec.acoes_realizadas || '';
-      document.getElementById('exec-itens').value       = exec.itens_substituidos || '';
-      document.getElementById('exec-material').value    = exec.consumo_material || '';
-      document.getElementById('exec-observacao').value  = exec.observacao_tecnico || '';
-    } else {
-      cardExecucao.style.display = 'none';
-    }
-
-    // ── Fotos ────────────────────────────────────────────────
-    renderFotos(current.arquivos || [], canManage);
-
     // ── Validação ────────────────────────────────────────────
     var cardValidacao = document.getElementById('card-validacao');
     cardValidacao.style.display = (canManage && p.status === 'em_revisao') ? '' : 'none';
@@ -168,39 +139,6 @@
     }
   }
 
-  function renderFotos(arquivos, canManage) {
-    var grid = document.getElementById('fotos-grid');
-    if (!arquivos.length) {
-      grid.innerHTML = '<span class="text-muted" style="font-size:12px" id="fotos-empty">Nenhuma foto enviada ainda.</span>';
-      return;
-    }
-    grid.innerHTML = arquivos.map(function (a) {
-      var src = BASE_PATH + '/' + a.caminho_arquivo;
-      var delBtn = canManage
-        ? '<button type="button" class="del-btn" data-arquivo-id="' + a.id + '" title="Remover"><i class="bi bi-trash"></i></button>'
-        : '';
-      return '<div class="prev-photo-thumb">' +
-        '<img src="' + esc(src) + '" onclick="window.open(this.src, \'_blank\')">' +
-        '<span class="tipo-tag">' + esc(a.tipo) + '</span>' +
-        delBtn +
-        '</div>';
-    }).join('');
-
-    grid.querySelectorAll('.del-btn').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        var fileId = btn.getAttribute('data-arquivo-id');
-        if (!confirm('Remover esta foto?')) return;
-        fetch(apiUrl('/arquivos/' + fileId), { method: 'DELETE', credentials: 'same-origin' })
-          .then(function (r) { return r.json(); })
-          .then(function (res) {
-            if (res.ok) { flash('Foto removida.', 'success'); load(); }
-            else flash(res.message || 'Erro ao remover foto.', 'error');
-          })
-          .catch(function () { flash('Falha ao conectar ao servidor.', 'error'); });
-      });
-    });
-  }
-
   function updateStatus(status, observacao, extra) {
     var payload = Object.assign({ status: status }, extra || {});
     if (observacao) payload.observacao = observacao;
@@ -213,37 +151,6 @@
       .then(function (res) {
         if (res.ok) { flash(res.message || 'Atualizado com sucesso.', 'success'); load(); }
         else flash(res.message || 'Erro ao atualizar.', 'error');
-      })
-      .catch(function () { flash('Falha ao conectar ao servidor.', 'error'); });
-  }
-
-  function collectChecklist() {
-    var out = {};
-    document.querySelectorAll('#execucao-checklist input[data-checklist-key]').forEach(function (input) {
-      out[input.getAttribute('data-checklist-key')] = input.checked;
-    });
-    return out;
-  }
-
-  function salvarExecucao(status) {
-    var payload = {
-      checklist: collectChecklist(),
-      causa_raiz: document.getElementById('exec-causa-raiz').value.trim(),
-      acoes_realizadas: document.getElementById('exec-acoes').value.trim(),
-      itens_substituidos: document.getElementById('exec-itens').value.trim(),
-      consumo_material: document.getElementById('exec-material').value.trim(),
-      observacao_tecnico: document.getElementById('exec-observacao').value.trim(),
-      status: status,
-    };
-    fetch(apiUrl('/execucao'), {
-      method: 'POST', credentials: 'same-origin',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    })
-      .then(function (r) { return r.json(); })
-      .then(function (res) {
-        if (res.ok) { flash(res.message || 'Execução salva.', 'success'); load(); }
-        else flash(res.message || 'Erro ao salvar execução.', 'error');
       })
       .catch(function () { flash('Falha ao conectar ao servidor.', 'error'); });
   }
@@ -263,31 +170,6 @@
       .then(function (res) {
         if (res.ok) { flash(res.message || 'Triagem atualizada.', 'success'); load(); }
         else flash(res.message || 'Erro ao salvar triagem.', 'error');
-      })
-      .catch(function () { flash('Falha ao conectar ao servidor.', 'error'); });
-  });
-
-  document.getElementById('btn-salvar-execucao').addEventListener('click', function () {
-    var statusAtual = current.preventiva.status;
-    salvarExecucao(statusAtual === 'em_revisao' ? 'em_revisao' : 'em_execucao');
-  });
-
-  document.getElementById('btn-enviar-revisao').addEventListener('click', function () {
-    if (!confirm('Enviar esta preventiva para revisão do supervisor?')) return;
-    salvarExecucao('em_revisao');
-  });
-
-  document.getElementById('btn-upload-foto').addEventListener('click', function () {
-    var input = document.getElementById('foto-input');
-    if (!input.files || !input.files[0]) { flash('Selecione um arquivo de imagem.', 'error'); return; }
-    var fd = new FormData();
-    fd.append('arquivo', input.files[0]);
-    fd.append('tipo', document.getElementById('foto-tipo').value);
-    fetch(apiUrl('/arquivos'), { method: 'POST', credentials: 'same-origin', body: fd })
-      .then(function (r) { return r.json(); })
-      .then(function (res) {
-        if (res.ok) { flash('Foto enviada.', 'success'); input.value = ''; load(); }
-        else flash(res.message || 'Erro ao enviar foto.', 'error');
       })
       .catch(function () { flash('Falha ao conectar ao servidor.', 'error'); });
   });

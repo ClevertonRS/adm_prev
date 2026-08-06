@@ -39,6 +39,8 @@ $CHECKLIST_ITEMS = [
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
   <link rel="stylesheet" href="<?= $base ?>/assets/css/gpon.css?v=<?= filemtime(__DIR__ . '/../../assets/css/gpon.css') ?>">
+  <link rel="stylesheet" href="<?= $base ?>/assets/css/admin.css?v=<?= filemtime(__DIR__ . '/../../assets/css/admin.css') ?>">
+  <link rel="stylesheet" href="<?= $base ?>/assets/css/preventivo.css?v=<?= filemtime(__DIR__ . '/../../assets/css/preventivo.css') ?>">
   <script>
     const BASE_PATH = '<?= $base ?>';
     window.GPON_PREVENTIVA_ID    = <?= $previewId ?>;
@@ -67,6 +69,9 @@ $CHECKLIST_ITEMS = [
 
 <header class="gpon-topbar">
   <div class="topbar-left">
+    <button class="sidebar-toggle" id="btn-sidebar-toggle" title="Alternar menu lateral">
+      <i class="bi bi-list"></i>
+    </button>
     <div class="topbar-logo-icon" onclick="location.href='<?= $base ?>/analise'" title="Radar GPON" style="cursor:pointer">📡</div>
     <div class="topbar-brand">
       <span class="brand-title">Radar GPON</span>
@@ -85,7 +90,14 @@ $CHECKLIST_ITEMS = [
   </div>
 </header>
 
-<div style="margin-top:var(--gpon-header-h); padding:20px; max-width:1000px; margin-left:auto; margin-right:auto">
+<div class="gpon-layout">
+
+  <aside class="gpon-sidebar admin-sidebar" id="preventivo-sidebar">
+    <?php require __DIR__ . '/../partials/sidebar.php'; ?>
+  </aside>
+
+  <main class="admin-main">
+    <div style="padding:20px; max-width:1000px; margin-left:auto; margin-right:auto">
 
   <div id="loading-state" class="text-center text-muted py-5"><i class="bi bi-hourglass-split"></i> Carregando…</div>
 
@@ -144,40 +156,6 @@ $CHECKLIST_ITEMS = [
       </div>
     </div>
 
-    <!-- Execução (técnico) -->
-    <div class="prev-card" id="card-execucao" style="display:none">
-      <h6><i class="bi bi-tools"></i> Execução</h6>
-      <div id="execucao-checklist"></div>
-      <div class="row g-3" style="margin-top:4px">
-        <div class="col-md-6"><label class="form-label">Causa raiz encontrada</label><textarea class="form-control form-control-sm" id="exec-causa-raiz" rows="2"></textarea></div>
-        <div class="col-md-6"><label class="form-label">Ação corretiva/preventiva aplicada</label><textarea class="form-control form-control-sm" id="exec-acoes" rows="2"></textarea></div>
-        <div class="col-md-6"><label class="form-label">Itens substituídos</label><textarea class="form-control form-control-sm" id="exec-itens" rows="2"></textarea></div>
-        <div class="col-md-6"><label class="form-label">Consumo de material</label><textarea class="form-control form-control-sm" id="exec-material" rows="2"></textarea></div>
-        <div class="col-12"><label class="form-label">Observação do técnico</label><textarea class="form-control form-control-sm" id="exec-observacao" rows="2"></textarea></div>
-        <div class="col-12 d-flex justify-content-end gap-2">
-          <button type="button" class="btn btn-sm btn-outline-secondary" id="btn-salvar-execucao"><i class="bi bi-save"></i> Salvar rascunho</button>
-          <button type="button" class="btn btn-sm btn-primary" id="btn-enviar-revisao"><i class="bi bi-send"></i> Enviar para revisão</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Fotos -->
-    <div class="prev-card" id="card-fotos">
-      <h6><i class="bi bi-camera"></i> Fotos e Evidências</h6>
-      <div id="upload-form-wrap" style="display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap">
-        <select class="form-select form-select-sm" id="foto-tipo" style="max-width:140px">
-          <option value="antes">Antes</option>
-          <option value="depois">Depois</option>
-          <option value="evidencia" selected>Evidência</option>
-        </select>
-        <input type="file" class="form-control form-control-sm" id="foto-input" accept="image/png,image/jpeg,image/webp" style="max-width:280px">
-        <button type="button" class="btn btn-sm btn-outline-primary" id="btn-upload-foto"><i class="bi bi-upload"></i> Enviar foto</button>
-      </div>
-      <div id="fotos-grid" style="display:flex;gap:10px;flex-wrap:wrap">
-        <span class="text-muted" style="font-size:12px" id="fotos-empty">Nenhuma foto enviada ainda.</span>
-      </div>
-    </div>
-
     <!-- Validação (supervisor/admin/backoffice) -->
     <div class="prev-card" id="card-validacao" style="display:none">
       <h6><i class="bi bi-clipboard-check"></i> Validação</h6>
@@ -197,9 +175,41 @@ $CHECKLIST_ITEMS = [
   </div>
 </div>
 
+</main>
+</div>
+
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="<?= $base ?>/assets/js/preventivo/common.js?v=<?= filemtime(__DIR__ . '/../../assets/js/preventivo/common.js') ?>"></script>
 <script src="<?= $base ?>/assets/js/preventivo-detalhe.js?v=<?= filemtime(__DIR__ . '/../../assets/js/preventivo-detalhe.js') ?>"></script>
+<script>
+(function () {
+  'use strict';
+  var sidebar = document.getElementById('preventivo-sidebar');
+  var btnToggle = document.getElementById('btn-sidebar-toggle');
+  if (btnToggle && sidebar) {
+    var saved = null;
+    try { saved = localStorage.getItem('gpon_preventivo_sidebar'); } catch (e) {}
+    if (saved === 'collapsed') sidebar.classList.add('collapsed');
+    btnToggle.addEventListener('click', function () {
+      sidebar.classList.toggle('collapsed');
+      try {
+        localStorage.setItem('gpon_preventivo_sidebar', sidebar.classList.contains('collapsed') ? 'collapsed' : 'open');
+      } catch (e) {}
+    });
+  }
+
+  // Na página de detalhe os painéis ficam em /preventivo: qualquer item do
+  // menu com data-panel redireciona para lá, abrindo o painel via hash.
+  document.querySelectorAll('#preventivo-sidebar .admin-nav-item[data-panel]').forEach(function (item) {
+    item.addEventListener('click', function (e) {
+      e.preventDefault();
+      var hash = item.getAttribute('href').replace('#', '') || 'dashboard';
+      if (item.dataset.panel === 'lista') hash = 'lista-' + (item.dataset.filter || '');
+      window.location.href = BASE_PATH + '/preventivo#' + hash;
+    });
+  });
+})();
+</script>
 </body>
 </html>
