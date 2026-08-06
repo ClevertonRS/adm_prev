@@ -7,12 +7,12 @@
  */
 ?>
 <div class="table-card">
-  <table id="tbl-preventivas" class="display" style="width:100%">
+  <table id="tbl-preventivas" class="display hp-list-tbl" style="width:100%">
     <thead>
       <tr>
-        <th>GPON</th><th>Splitter</th><th>Localidade</th><th>Status</th>
+        <th>GPON</th><th>Splitter</th><th>Status</th>
         <th>Prioridade</th><th>Supervisor</th><th>Técnico</th>
-        <th>Ocorrências</th><th>Criado em</th><th></th>
+        <th>Criado em</th><th class="hp-col-acao">Ação</th>
       </tr>
     </thead>
     <tbody></tbody>

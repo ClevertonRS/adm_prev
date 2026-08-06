@@ -87,7 +87,7 @@ $base = GPON_BASE_PATH;
       <div class="admin-panel-header">
         <h5 class="admin-panel-title">
           <i class="bi bi-hourglass-split" id="lista-panel-icon"></i>
-          <span id="lista-panel-title">Em Andamento</span>
+          <span id="lista-panel-title">Triagem</span>
         </h5>
       </div>
       <?php require __DIR__ . '/../partials/lista.php'; ?>
@@ -132,7 +132,7 @@ $base = GPON_BASE_PATH;
 
   // ── Navegação entre painéis ────────────────────────────────────────
   var PANEL_META = {
-    andamento:   { title: 'Em Andamento', icon: 'bi-hourglass-split' },
+    andamento:   { title: 'Triagem', icon: 'bi-hourglass-split' },
     triagem:     { title: 'Triagem', icon: 'bi-sliders' },
     em_execucao: { title: 'Em Execução', icon: 'bi-tools' },
     em_revisao:  { title: 'Em Revisão', icon: 'bi-clipboard-check' },

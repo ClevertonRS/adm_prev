@@ -18,6 +18,10 @@ window.PreventivoLista = (function () {
     andamento: ['aberta', 'triagem', 'em_execucao', 'em_revisao'],
   };
 
+function chip(text, cls) {
+    return '<span class="hp-chip ' + cls + '">' + esc(text) + '</span>';
+  }
+
   var dt = null;
   var allRows = [];
 
@@ -32,20 +36,18 @@ window.PreventivoLista = (function () {
     if (dt) return; // já inicializada — nunca recriar
 
     dt = $('#tbl-preventivas').DataTable({
-      data: [], pageLength: 25, order: [[8, 'desc']],
+      data: [], pageLength: 25, order: [[6, 'desc']],
       language: { url: BASE_PATH + '/assets/js/pt-BR.json' },
       columns: [
-        { data: 'gpon', render: function (d) { return '<span class="mono fw-700" style="font-size:12px">' + esc(d) + '</span>'; } },
-        { data: 'splitter', render: function (d) { return '<span class="mono" style="font-size:12px">' + esc(d) + '</span>'; } },
-        { data: null, render: function (_, __, row) { return esc(row.localidade || row.uf || '—'); } },
+        { data: 'gpon', render: function (d) { return chip(d, 'hp-chip-gpon'); } },
+        { data: 'splitter', render: function (d) { return chip(d, 'hp-chip-splitter'); } },
         { data: 'status', render: function (d) { return badge(STATUS_LABELS[d] || d, STATUS_COLORS[d]); } },
         { data: 'prioridade', render: function (d) { return badge((d || 'media').charAt(0).toUpperCase() + (d || 'media').slice(1), PRIORIDADE_COLORS[d]); } },
         { data: 'supervisor_nome', render: function (d) { return d ? esc(d) : '<span class="text-muted">—</span>'; } },
         { data: 'tecnico_nome', render: function (d) { return d ? esc(d) : '<span class="text-muted">—</span>'; } },
-        { data: 'origem_total_ocorrencias', render: function (d) { return d || 0; } },
         { data: 'criado_em', render: function (d) { return '<span style="font-size:11px">' + fmtDate(d) + '</span>'; } },
         { data: null, orderable: false, render: function (_, __, row) {
-            return '<a href="' + BASE_PATH + '/preventivo/' + row.id + '" class="btn btn-sm btn-outline-primary"><i class="bi bi-arrow-right-circle"></i> Abrir</a>';
+            return '<a href="' + BASE_PATH + '/preventivo/' + row.id + '" class="btn btn-outline-primary"><i class="bi bi-arrow-right-circle"></i> Abrir</a>';
           }
         },
       ],

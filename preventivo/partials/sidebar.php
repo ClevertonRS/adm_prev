@@ -21,11 +21,6 @@
 
     <a href="#lista-andamento" class="admin-nav-item" data-panel="lista" data-filter="andamento">
       <i class="bi bi-hourglass-split"></i>
-      <span>Em Andamento</span>
-    </a>
-
-    <a href="#lista-triagem" class="admin-nav-item" data-panel="lista" data-filter="triagem">
-      <i class="bi bi-sliders"></i>
       <span>Triagem</span>
     </a>
 
