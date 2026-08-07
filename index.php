@@ -90,6 +90,13 @@ if (!$user) {
     exit;
 }
 
+// Somente usuários admin ou supervisor podem acessar o sistema.
+// Qualquer outro nível não autenticado é redirecionado para o login.
+if (!gpon_user_has_role($user, ['admin', 'supervisor'])) {
+    gpon_handle_logout();
+    exit;
+}
+
 // ── API routes ─────────────────────────────────────────────────
 if ($path === '/upload' && $method === 'POST') {
     gpon_handle_upload($pdo);

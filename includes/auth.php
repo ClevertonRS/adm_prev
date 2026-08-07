@@ -134,6 +134,13 @@ function gpon_handle_login(PDO $pdo): void
     // Login bem-sucedido: limpar contadores
     unset($_SESSION[$lockKey], $_SESSION[$lockUntil]);
 
+    // Somente admin ou supervisor podem acessar o sistema.
+    if (!in_array($row['nivel'], ['admin', 'supervisor'], true)) {
+        $_SESSION['gpon_flash_error'] = 'Acesso restrito a administradores e supervisores.';
+        header('Location: ' . GPON_BASE_PATH . '/login');
+        exit;
+    }
+
     $_SESSION['gpon_user_id'] = $row['id'];
     $_SESSION['gpon_nome']    = $row['nome'];
     $_SESSION['gpon_usuario'] = $row['usuario'];
