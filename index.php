@@ -165,6 +165,11 @@ if (preg_match('#^/concluida/(\d+)$#', $path, $m)) {
     exit;
 }
 
+if (preg_match('#^/revisao/(\d+)$#', $path, $m)) {
+    require_once __DIR__ . '/preventivo/views/revisao-detalhe.php';
+    exit;
+}
+
 // Admin routes
 if ($path === '/api/admin/usuarios') {
     if ($method === 'GET')  gpon_api_usuarios_list($pdo);

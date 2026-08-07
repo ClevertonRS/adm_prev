@@ -76,7 +76,9 @@ function matches(row, filterKey) {
             // Decisão 100% pelo atendimento da linha (indeppedente do filtro ativo):
             // analise → página de Análise; concluido → página de Conclusão.
             var url;
-            if (row.atendimento_status === 'concluido') {
+            if (row.atendimento_status === 'revisao') {
+              url = BASE_PATH + '/revisao/' + row.id;
+            } else if (row.atendimento_status === 'concluido') {
               url = BASE_PATH + '/concluida/' + row.id;
             } else if (row.atendimento_status === 'analise') {
               url = BASE_PATH + '/analise/' + row.id;

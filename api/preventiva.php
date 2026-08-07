@@ -596,6 +596,11 @@ function gpon_preventiva_routes(PDO $pdo, array $user, string $path, string $met
         return true;
     }
 
+    if (preg_match('#^/api/preventiva/(\\d+)/concluir$#', $path, $m) && $method === 'POST') {
+        gpon_preventiva_concluir($pdo, (int)$m[1], $user);
+        return true;
+    }
+
     return false;
 }
 
@@ -635,4 +640,41 @@ function gpon_preventiva_enviar_revisao(PDO $pdo, int $id, array $user): void
     gpon_preventiva_insert_history($pdo, $id, 'concluida', 'em_revisao', $user, 'Enviada para revisão.');
 
     gpon_json(['ok' => true, 'message' => 'Preventiva enviada para revisão.', 'data' => ['atendimento_id' => (int)$atend['id'], 'atendimento_status' => 'revisao']]);
+}
+
+/**
+ * Conclui uma preventiva em revisão, atualizando o status na tabela
+ * atendimentos ('revisao' → 'concluido'). Somente-leitura da preventiva.
+ */
+function gpon_preventiva_concluir(PDO $pdo, int $id, array $user): void
+{
+    $stmt = $pdo->prepare("SELECT id FROM preventivas_rede WHERE id = ? LIMIT 1");
+    $stmt->execute([$id]);
+    $preventiva = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (!$preventiva) {
+        gpon_json(['ok' => false, 'message' => 'Preventiva não encontrada.'], 404);
+    }
+
+    if (!gpon_preventiva_can_manage($user, $preventiva)) {
+        gpon_json(['ok' => false, 'message' => 'Acesso negado.'], 403);
+    }
+
+    $at = $pdo->prepare("SELECT id, status FROM atendimentos WHERE preventiva_id = ? ORDER BY id DESC LIMIT 1");
+    $at->execute([$id]);
+    $atend = $at->fetch(PDO::FETCH_ASSOC);
+
+    if (!$atend) {
+        gpon_json(['ok' => false, 'message' => 'Nenhum atendimento encontrado para esta preventiva.'], 404);
+    }
+
+    if ($atend['status'] !== 'revisao') {
+        gpon_json(['ok' => false, 'message' => 'Apenas atendimentos em revisão podem ser concluídos.'], 422);
+    }
+
+    $pdo->prepare("UPDATE atendimentos SET status = 'concluido', concluido_em = COALESCE(concluido_em, NOW()) WHERE id = ?")
+        ->execute([$atend['id']]);
+
+    gpon_preventiva_insert_history($pdo, $id, 'em_revisao', 'concluida', $user, 'Concluída após revisão.');
+
+    gpon_json(['ok' => true, 'message' => 'Preventiva concluída.', 'data' => ['atendimento_id' => (int)$atend['id'], 'atendimento_status' => 'concluido']]);
 }
