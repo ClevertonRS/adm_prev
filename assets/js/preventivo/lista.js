@@ -33,6 +33,11 @@ function matches(row, filterKey) {
       // registrado com status 'analise' na tabela atendimentos.
       return row.atendimento_status === 'analise';
     }
+    if (filterKey === 'concluida') {
+      // Concluídas: exibe preventivas cujo atendimento foi concluído
+      // (status 'concluido' na tabela atendimentos).
+      return row.atendimento_status === 'concluido';
+    }
     if (STATUS_GROUPS[filterKey]) return STATUS_GROUPS[filterKey].indexOf(row.status) !== -1;
     return row.status === filterKey;
   }
@@ -59,12 +64,16 @@ function matches(row, filterKey) {
         { data: 'tecnico_nome', render: function (d) { return d ? esc(d) : '<span class="text-muted">—</span>'; } },
         { data: 'criado_em', render: function (d) { return '<span style="font-size:11px">' + fmtDate(d) + '</span>'; } },
         { data: null, orderable: false, render: function (_, __, row) {
-            // Aba Em Execução (que só lista atendimentos em 'analise') sempre abre a página de Análise;
-            // demais agentes abrem o detalhe da preventiva.
-            var emAnalise = (row && row.atendimento_status === 'analise') || currentFilter === 'em_execucao';
-            var url = emAnalise
-              ? BASE_PATH + '/analise/' + row.id
-              : BASE_PATH + '/preventivo/' + row.id;
+            // Decisão 100% pelo atendimento da linha (indeppedente do filtro ativo):
+            // analise → página de Análise; concluido → página de Conclusão.
+            var url;
+            if (row.atendimento_status === 'concluido') {
+              url = BASE_PATH + '/concluida/' + row.id;
+            } else if (row.atendimento_status === 'analise') {
+              url = BASE_PATH + '/analise/' + row.id;
+            } else {
+              url = BASE_PATH + '/preventivo/' + row.id;
+            }
             return '<a href="' + url + '" class="btn btn-outline-primary"><i class="bi bi-arrow-right-circle"></i> Abrir</a>';
           }
         },
