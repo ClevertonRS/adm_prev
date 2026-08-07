@@ -38,6 +38,11 @@ function matches(row, filterKey) {
       // (status 'concluido' na tabela atendimentos).
       return row.atendimento_status === 'concluido';
     }
+    if (filterKey === 'em_revisao') {
+      // Em Revisão: exibe preventivas cujo atendimento está em revisão
+      // (status 'revisao' na tabela atendimentos).
+      return row.atendimento_status === 'revisao';
+    }
     if (STATUS_GROUPS[filterKey]) return STATUS_GROUPS[filterKey].indexOf(row.status) !== -1;
     return row.status === filterKey;
   }
@@ -56,6 +61,10 @@ function matches(row, filterKey) {
             // Atendimento em análise (tabela atendimentos) → badge "Análise" amarelo
             if (row && row.atendimento_status === 'analise') {
               return PreventivoCommon.badge('Análise', { bg: '#fef3c7', fg: '#92400e' }, { padding: '2px 8px', fontSize: '11px' });
+            }
+            // Atendimento em revisão → badge "Revisão" azul
+            if (row && row.atendimento_status === 'revisao') {
+              return PreventivoCommon.badge('Revisão', { bg: '#dbeafe', fg: '#1d4ed8' }, { padding: '2px 8px', fontSize: '11px' });
             }
             return badge(STATUS_LABELS[d] || d, STATUS_COLORS[d]);
           } },
