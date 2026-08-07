@@ -38,11 +38,17 @@ if ($previewId <= 0) {
     .prev-card h6 { font-weight:700; color:var(--gpon-text); margin-bottom:14px; display:flex; align-items:center; gap:8px; font-size:15px; }
     .prev-card h6 i { color:var(--gpon-primary); }
 
+    /* Linha com dois cards lado a lado */
+    .prev-card-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; align-items:stretch; margin-bottom:16px; }
+    .prev-card-row .prev-card { margin-bottom:0; height:100%; display:flex; flex-direction:column; }
+    .prev-card-row .prev-card .prev-photo-thumb { flex-shrink:0; }
+    @media (max-width: 860px) { .prev-card-row { grid-template-columns:1fr; } }
+
     /* Hero — card flutuante com borda colorida (mesmo padrão das demais páginas) */
     .prev-hero {
       background:#ffffff;
       border:1px solid #d8d0f0; border-top:4px solid #10b981;
-      border-radius:16px; padding:24px 26px; margin-bottom:16px;
+      border-radius:16px; padding:24px 26px; margin-bottom:45px;
       box-shadow:0 10px 24px rgba(6,95,70,.10);
       position:relative; overflow:hidden;
     }
@@ -138,30 +144,32 @@ if ($previewId <= 0) {
           </div>
         </div>
 
-        <!-- Card 1: Descrição da Análise (borda âmbar) -->
-        <div class="prev-card card-analise">
-          <h6><i class="bi bi-journal-text"></i> Análise do técnico</h6>
-          <div class="desc-rotulo">Descrição da análise</div>
-          <div class="descricao" id="analise-descricao"><span class="text-muted">Sem descrição de análise.</span></div>
+        <!-- Linha: Análise (descrição + imagens, lado a lado) -->
+        <div class="prev-card-row">
+          <div class="prev-card card-analise">
+            <h6><i class="bi bi-journal-text"></i> Análise do técnico</h6>
+            <div class="desc-rotulo">Descrição da análise</div>
+            <div class="descricao" id="analise-descricao"><span class="text-muted">Sem descrição de análise.</span></div>
+          </div>
+
+          <div class="prev-card card-analise">
+            <h6><i class="bi bi-camera"></i> Imagens da análise</h6>
+            <div id="fotos-analise-grupos"><span class="text-muted" style="font-size:12px">Nenhuma imagem de análise registrada.</span></div>
+          </div>
         </div>
 
-        <!-- Card 2: Imagens da Análise (mesma cor âmbar) -->
-        <div class="prev-card card-analise">
-          <h6><i class="bi bi-camera"></i> Imagens da análise</h6>
-          <div id="fotos-analise-grupos"><span class="text-muted" style="font-size:12px">Nenhuma imagem de análise registrada.</span></div>
-        </div>
+        <!-- Linha: Conclusão (descrição + imagens lado a lado) -->
+        <div class="prev-card-row">
+          <div class="prev-card card-conclusao">
+            <h6><i class="bi bi-check2-square"></i> Conclusão do técnico</h6>
+            <div class="desc-rotulo">Descrição da conclusão</div>
+            <div class="descricao descricao-concluida" id="conclusao-descricao"><span class="text-muted">Sem descrição de conclusão.</span></div>
+          </div>
 
-        <!-- Card 3: Descrição da Conclusão (borda verde) -->
-        <div class="prev-card card-conclusao">
-          <h6><i class="bi bi-check2-square"></i> Conclusão do técnico</h6>
-          <div class="desc-rotulo">Descrição da conclusão</div>
-          <div class="descricao descricao-concluida" id="conclusao-descricao"><span class="text-muted">Sem descrição de conclusão.</span></div>
-        </div>
-
-        <!-- Card 4: Imagens da Conclusão (mesma cor verde) -->
-        <div class="prev-card card-conclusao">
-          <h6><i class="bi bi-camera"></i> Imagens da conclusão</h6>
-          <div id="fotos-conclusao-grupos"><span class="text-muted" style="font-size:12px">Nenhuma imagem de conclusão registrada.</span></div>
+          <div class="prev-card card-conclusao">
+            <h6><i class="bi bi-camera"></i> Imagens da conclusão</h6>
+            <div id="fotos-conclusao-grupos"><span class="text-muted" style="font-size:12px">Nenhuma imagem de conclusão registrada.</span></div>
+          </div>
         </div>
 
       </div>
