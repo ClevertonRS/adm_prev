@@ -39,19 +39,10 @@
       <span>Concluídas</span>
     </a>
 
-    <a href="#lista-" class="admin-nav-item" data-panel="lista" data-filter="">
-      <i class="bi bi-clock-history"></i>
-      <span>Histórico</span>
-    </a>
   </div>
 
   <div class="admin-nav-section">
     <span class="admin-nav-section-title">Gestão</span>
-
-    <a href="<?= $base ?>/analise" class="admin-nav-item" title="Criar preventiva a partir de uma combinação na Análise">
-      <i class="bi bi-plus-circle"></i>
-      <span>Nova Preventiva</span>
-    </a>
 
     <span class="admin-nav-item disabled">
       <i class="bi bi-people"></i>
