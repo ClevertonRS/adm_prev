@@ -26,8 +26,13 @@ var dt = null;
   var allRows = [];
   var currentFilter = null;
 
-  function matches(row, filterKey) {
+function matches(row, filterKey) {
     if (!filterKey) return true; // '' = todas (Histórico)
+    if (filterKey === 'em_execucao') {
+      // Em Execução: exibe preventivas cujo atendimento (análise) foi
+      // registrado com status 'analise' na tabela atendimentos.
+      return row.atendimento_status === 'analise';
+    }
     if (STATUS_GROUPS[filterKey]) return STATUS_GROUPS[filterKey].indexOf(row.status) !== -1;
     return row.status === filterKey;
   }
@@ -42,7 +47,13 @@ var dt = null;
       columns: [
         { data: 'gpon', render: function (d) { return chip(d, 'hp-chip-gpon'); } },
         { data: 'splitter', render: function (d) { return chip(d, 'hp-chip-splitter'); } },
-        { data: 'status', render: function (d) { return badge(STATUS_LABELS[d] || d, STATUS_COLORS[d]); } },
+        { data: 'status', render: function (d, type, row) {
+            // Atendimento em análise (tabela atendimentos) → badge "Análise" amarelo
+            if (row && row.atendimento_status === 'analise') {
+              return PreventivoCommon.badge('Análise', { bg: '#fef3c7', fg: '#92400e' }, { padding: '2px 8px', fontSize: '11px' });
+            }
+            return badge(STATUS_LABELS[d] || d, STATUS_COLORS[d]);
+          } },
         { data: 'prioridade', render: function (d) { return badge((d || 'media').charAt(0).toUpperCase() + (d || 'media').slice(1), PRIORIDADE_COLORS[d]); } },
         { data: 'supervisor_nome', render: function (d) { return d ? esc(d) : '<span class="text-muted">—</span>'; } },
         { data: 'tecnico_nome', render: function (d) { return d ? esc(d) : '<span class="text-muted">—</span>'; } },
