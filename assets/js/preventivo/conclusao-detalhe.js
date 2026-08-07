@@ -88,4 +88,45 @@
       loading.style.display = 'none';
       alert('Erro ao carregar a conclusão.');
     });
+
+  // ── Enviar para Revisão ─────────────────────────────────────────
+  var btnRevisao = document.getElementById('btn-enviar-revisao');
+  if (btnRevisao) {
+    btnRevisao.addEventListener('click', function () {
+      Swal.fire({
+        title: 'Enviar para revisão?',
+        text: 'A preventiva será enviada para revisão. Deseja continuar?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sim, enviar',
+        cancelButtonText: 'Cancelar',
+        confirmButtonColor: '#8a1fb0',
+        cancelButtonColor: '#6b7280',
+      }).then(function (result) {
+        if (!result.isConfirmed) return;
+        fetch(base + '/api/preventiva/' + id + '/enviar-revisao', {
+          method: 'POST',
+          credentials: 'same-origin',
+        })
+          .then(function (r) { return r.json(); })
+          .then(function (res) {
+            if (!res || !res.ok) {
+              Swal.fire('Falha', (res && res.message) || 'Não foi possível enviar para revisão.', 'error');
+              return;
+            }
+            Swal.fire({
+              title: 'Enviada para revisão',
+              text: 'A preventiva foi enviada para revisão.',
+              icon: 'success',
+              confirmButtonText: 'Ok',
+            }).then(function () {
+              window.location.href = base + '/preventivo#lista-concluida';
+            });
+          })
+          .catch(function () {
+            Swal.fire('Erro', 'Não foi possível enviar para revisão.', 'error');
+          });
+      });
+    });
+  }
 })();

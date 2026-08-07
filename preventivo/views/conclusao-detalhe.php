@@ -90,6 +90,19 @@ if ($previewId <= 0) {
     .prev-photo-thumb { position:relative; width:120px; height:120px; border-radius:10px; overflow:hidden; border:1px solid var(--gpon-border); box-shadow:0 2px 6px rgba(76,29,149,.08); }
     .prev-photo-thumb img { width:100%; height:100%; object-fit:cover; cursor:pointer; display:block; }
     .foto-tag { position:absolute; bottom:0; left:0; right:0; background:rgba(0,0,0,.6); color:#fff; font-size:9px; text-align:center; padding:2px 0; text-transform:uppercase; }
+
+    /* Ações finais — enviar para revisão */
+    .prev-card-conclusao-acoes { display:flex; justify-content:flex-end; gap:8px; margin-top:4px; }
+    .btn-enviar-revisao {
+      background:linear-gradient(135deg,#8a1fb0,#6d0fa5);
+      color:#fff; font-weight:700; letter-spacing:.02em;
+      padding:10px 22px; border:none; border-radius:10px; font-size:13px;
+      display:inline-flex; align-items:center; gap:8px;
+      box-shadow:0 4px 14px rgba(109,15,165,.30);
+      transition:transform .15s ease, box-shadow .15s ease, filter .15s ease;
+    }
+    .btn-enviar-revisao:hover { filter:brightness(1.08); transform:translateY(-1px); box-shadow:0 6px 18px rgba(109,15,165,.38); }
+    .btn-enviar-revisao:active { transform:translateY(0); }
   </style>
 </head>
 <body>
@@ -172,12 +185,20 @@ if ($previewId <= 0) {
           </div>
         </div>
 
+        <!-- Enviar para Revisão -->
+        <div class="prev-card-conclusao-acoes">
+          <button type="button" class="btn-enviar-revisao" id="btn-enviar-revisao">
+            <i class="bi bi-send"></i> Enviar para Revisão
+          </button>
+        </div>
+
       </div>
     </div>
   </main>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="<?= $base ?>/assets/js/preventivo/common.js?v=<?= filemtime(__DIR__ . '/../../assets/js/preventivo/common.js') ?>"></script>
 <script src="<?= $base ?>/assets/js/preventivo/conclusao-detalhe.js?v=<?= filemtime(__DIR__ . '/../../assets/js/preventivo/conclusao-detalhe.js') ?>"></script>
