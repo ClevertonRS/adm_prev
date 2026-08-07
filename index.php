@@ -151,21 +151,42 @@ if ($path === '/preventivo' || $path === '/preventiva') {
 }
 
 if (preg_match('#^/preventivo/(\d+)$#', $path, $m)) {
+    // Somente preventivas em andamento (Triagem): status no grupo
+    // ['aberta','triagem','em_execucao','em_revisao'].
+    if (gpon_preventiva_contexto_andamento($pdo, (int)$m[1]) !== true) {
+        header('Location: ' . GPON_BASE_PATH . '/preventivo#lista-andamento');
+        exit;
+    }
     require_once __DIR__ . '/preventivo/views/detalhe.php';
     exit;
 }
 
 if (preg_match('#^/analise/(\d+)$#', $path, $m)) {
+    // Somente preventivas com atendimento em análise (status 'analise').
+    if (gpon_preventiva_contexto_ok($pdo, (int)$m[1], 'analise') !== true) {
+        header('Location: ' . GPON_BASE_PATH . '/preventivo#lista-em_execucao');
+        exit;
+    }
     require_once __DIR__ . '/preventivo/views/analise-detalhe.php';
     exit;
 }
 
 if (preg_match('#^/concluida/(\d+)$#', $path, $m)) {
+    // Somente preventivas com atendimento concluído.
+    if (gpon_preventiva_contexto_ok($pdo, (int)$m[1], 'concluido') !== true) {
+        header('Location: ' . GPON_BASE_PATH . '/preventivo#lista-concluida');
+        exit;
+    }
     require_once __DIR__ . '/preventivo/views/conclusao-detalhe.php';
     exit;
 }
 
 if (preg_match('#^/revisao/(\d+)$#', $path, $m)) {
+    // Somente preventivas com atendimento em revisão.
+    if (gpon_preventiva_contexto_ok($pdo, (int)$m[1], 'revisao') !== true) {
+        header('Location: ' . GPON_BASE_PATH . '/preventivo#lista-em_revisao');
+        exit;
+    }
     require_once __DIR__ . '/preventivo/views/revisao-detalhe.php';
     exit;
 }

@@ -734,6 +734,36 @@ function gpon_empresa_por_gpon(?string $gpon, ?PDO $pdo = null): ?string
     }
 }
 
+/**
+ * Valida se a preventiva possui um atendimento no status equivalente ao
+ * contexto (ex.: página de conclusão só aceita status 'concluido').
+ * Retorna true se bate, false se não, e null quando a preventiva/atendimento
+ * não existe.
+ */
+function gpon_preventiva_contexto_ok(PDO $pdo, int $id, string $esperado): ?bool
+{
+    $stmt = $pdo->prepare("SELECT a.status FROM atendimentos a WHERE a.preventiva_id = ? ORDER BY a.id DESC LIMIT 1");
+    $stmt->execute([$id]);
+    $atend = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (!$atend) return null;
+    return $atend['status'] === $esperado;
+}
+
+/**
+ * Valida se a preventiva está em andamento (grupo da listagem "Triagem"),
+ * ou seja, com status em ['aberta','triagem','em_execucao','em_revisao']
+ * na tabela preventivas_rede. Retorna true se bate, false se não, e null
+ * quando a preventiva não existe.
+ */
+function gpon_preventiva_contexto_andamento(PDO $pdo, int $id): ?bool
+{
+    $stmt = $pdo->prepare("SELECT status FROM preventivas_rede WHERE id = ? LIMIT 1");
+    $stmt->execute([$id]);
+    $prev = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (!$prev) return null;
+    return in_array($prev['status'], ['aberta', 'triagem', 'em_execucao', 'em_revisao'], true);
+}
+
 function gpon_empresa_por_localidade(?string $localidade): ?string
 {
     if ($localidade === null || trim($localidade) === '') return null;
