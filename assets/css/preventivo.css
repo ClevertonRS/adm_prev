@@ -24,6 +24,9 @@
 .kpi-card[data-status="cancelada"]     { border-top: 3px solid #64748b; }
 .kpi-card[data-status="total"]         { border-top: 3px solid var(--gpon-primary); }
 
+/* Cards ocultos (Aberta/Cancelada) — continuam no DOM, só não exibem */
+.kpi-hide { display: none !important; }
+
 /* Lista "Criadas recentemente" (Visão Geral) */
 .prev-recent-item {
   display: flex;

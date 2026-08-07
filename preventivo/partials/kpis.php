@@ -13,7 +13,7 @@
     <span class="kpi-value" id="kpi-total">—</span>
     <span class="kpi-sub">Todas as preventivas</span>
   </div>
-  <div class="kpi-card" data-status="aberta" onclick="PreventivoGoToLista('aberta')" style="cursor:pointer">
+  <div class="kpi-card kpi-hide" data-status="aberta" onclick="PreventivoGoToLista('aberta')" style="cursor:pointer">
     <i class="bi bi-folder2-open kpi-icon"></i>
     <span class="kpi-label">Aberta</span>
     <span class="kpi-value" id="kpi-aberta">—</span>
@@ -43,7 +43,7 @@
     <span class="kpi-value" id="kpi-concluida">—</span>
     <span class="kpi-sub">Encerradas com sucesso</span>
   </div>
-  <div class="kpi-card" data-status="cancelada" onclick="PreventivoGoToLista('cancelada')" style="cursor:pointer">
+  <div class="kpi-card kpi-hide" data-status="cancelada" onclick="PreventivoGoToLista('cancelada')" style="cursor:pointer">
     <i class="bi bi-x-circle kpi-icon"></i>
     <span class="kpi-label">Cancelada</span>
     <span class="kpi-value" id="kpi-cancelada">—</span>
