@@ -155,6 +155,11 @@ if (preg_match('#^/preventivo/(\d+)$#', $path, $m)) {
     exit;
 }
 
+if (preg_match('#^/analise/(\d+)$#', $path, $m)) {
+    require_once __DIR__ . '/preventivo/views/analise-detalhe.php';
+    exit;
+}
+
 // Admin routes
 if ($path === '/api/admin/usuarios') {
     if ($method === 'GET')  gpon_api_usuarios_list($pdo);

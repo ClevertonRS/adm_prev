@@ -59,7 +59,13 @@ function matches(row, filterKey) {
         { data: 'tecnico_nome', render: function (d) { return d ? esc(d) : '<span class="text-muted">—</span>'; } },
         { data: 'criado_em', render: function (d) { return '<span style="font-size:11px">' + fmtDate(d) + '</span>'; } },
         { data: null, orderable: false, render: function (_, __, row) {
-            return '<a href="' + BASE_PATH + '/preventivo/' + row.id + '" class="btn btn-outline-primary"><i class="bi bi-arrow-right-circle"></i> Abrir</a>';
+            // Aba Em Execução (que só lista atendimentos em 'analise') sempre abre a página de Análise;
+            // demais agentes abrem o detalhe da preventiva.
+            var emAnalise = (row && row.atendimento_status === 'analise') || currentFilter === 'em_execucao';
+            var url = emAnalise
+              ? BASE_PATH + '/analise/' + row.id
+              : BASE_PATH + '/preventivo/' + row.id;
+            return '<a href="' + url + '" class="btn btn-outline-primary"><i class="bi bi-arrow-right-circle"></i> Abrir</a>';
           }
         },
       ],

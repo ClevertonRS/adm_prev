@@ -224,7 +224,10 @@ function gpon_preventiva_create(PDO $pdo, array $user): void
 function gpon_preventiva_select_base(): string
 {
     return "SELECT p.*, s.nome AS supervisor_nome, t.nome AS tecnico_nome, c.nome AS criado_por_nome,
-            a.id AS atendimento_id, a.status AS atendimento_status, a.tecnico_analise_id AS atendimento_tecnico_analise_id, a.criado_em AS atendimento_criado_em
+            a.id AS atendimento_id, a.status AS atendimento_status, a.tecnico_analise_id AS atendimento_tecnico_analise_id, a.criado_em AS atendimento_criado_em,
+            a.descricao_analise AS atendimento_descricao_analise, a.descricao_execucao AS atendimento_descricao_execucao,
+            a.iniciado_em AS atendimento_iniciado_em, a.concluido_em AS atendimento_concluido_em,
+            (SELECT u.nome FROM usuarios u WHERE u.id = a.tecnico_analise_id) AS atendimento_tecnico_analise_nome
             FROM preventivas_rede p
             LEFT JOIN usuarios s ON s.id = p.supervisor_id
             LEFT JOIN usuarios t ON t.id = p.tecnico_id
